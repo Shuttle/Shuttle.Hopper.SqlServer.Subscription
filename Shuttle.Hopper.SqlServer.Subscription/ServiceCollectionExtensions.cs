@@ -1,0 +1,38 @@
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Shuttle.Core.Contract;
+
+namespace Shuttle.Hopper.SqlServer.Subscription;
+
+public static class ServiceCollectionExtensions
+{
+    extension(IServiceCollection services)
+    {
+        public IServiceCollection AddSqlServerSubscription(Action<SqlServerSubscriptionBuilder>? builder = null)
+        {
+            var sqlServerSubscriptionBuilder = new SqlServerSubscriptionBuilder(Guard.AgainstNull(services));
+
+            builder?.Invoke(sqlServerSubscriptionBuilder);
+
+            services.AddSingleton<IValidateOptions<SqlServerSubscriptionOptions>, SqlServerSubscriptionOptionsValidator>();
+
+            services.AddOptions<SqlServerSubscriptionOptions>().Configure(options =>
+            {
+                options.ConnectionString = sqlServerSubscriptionBuilder.Options.ConnectionString;
+                options.Schema = sqlServerSubscriptionBuilder.Options.Schema;
+                options.CacheTimeout = sqlServerSubscriptionBuilder.Options.CacheTimeout;
+            });
+
+            services.AddSingleton<ISubscriptionService, SubscriptionService>();
+            services.AddSingleton<SubscriptionObserver>();
+            services.AddSingleton<IHostedService, SubscriptionHostedService>();
+            services.AddSingleton<ISqlServerSubscriptionDbContextFactory, SqlServerSubscriptionDbContextFactory>();
+            services.TryAddSingleton<IMemoryCache, MemoryCache>();
+
+            return services;
+        }
+    }
+}

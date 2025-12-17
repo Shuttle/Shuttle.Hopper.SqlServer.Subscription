@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="LICENSE" />
+  </Folder>
+  <Project Path="Shuttle.Hopper.SqlServer.Subscription.Tests/Shuttle.Hopper.SqlServer.Subscription.Tests.csproj" Id="3e3e38a8-2e73-4585-89e5-dbc12244410a" />
+  <Project Path="Shuttle.Hopper.SqlServer.Subscription/Shuttle.Hopper.SqlServer.Subscription.csproj" />
+</Solution>
