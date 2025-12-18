@@ -23,14 +23,13 @@ public static class ServiceCollectionExtensions
             {
                 options.ConnectionString = sqlServerSubscriptionBuilder.Options.ConnectionString;
                 options.Schema = sqlServerSubscriptionBuilder.Options.Schema;
-                options.CacheTimeout = sqlServerSubscriptionBuilder.Options.CacheTimeout;
+                options.EnsureSchema = sqlServerSubscriptionBuilder.Options.EnsureSchema;
             });
 
-            services.AddSingleton<ISubscriptionService, SubscriptionService>();
+            services.AddSingleton<ISubscriptionQuery, SubscriptionQuery>();
             services.AddSingleton<SubscriptionObserver>();
             services.AddSingleton<IHostedService, SubscriptionHostedService>();
             services.AddSingleton<ISqlServerSubscriptionDbContextFactory, SqlServerSubscriptionDbContextFactory>();
-            services.TryAddSingleton<IMemoryCache, MemoryCache>();
 
             return services;
         }

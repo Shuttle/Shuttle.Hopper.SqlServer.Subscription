@@ -13,9 +13,9 @@ public class SqlServerSubscriptionServiceFixture
     private readonly Uri _workTransportUri = new("queue://./work");
 
     [Test]
-    public async Task Should_be_able_subscribe_normally_async()
+    public async Task Should_be_able_perform_standard_subscriptions_async()
     {
-        var subscriptionService = await ExerciseSubscriptionServiceAsync(SubscribeType.Normal, [typeof(MessageTypeOne).FullName!]);
+        var subscriptionService = await ExerciseSubscriptionServiceAsync(SubscriptionMode.Standard, [typeof(MessageTypeOne).FullName!]);
 
         var uris = (await subscriptionService.GetSubscribedUrisAsync(new MessageTypeOne())).ToList();
 
@@ -26,7 +26,7 @@ public class SqlServerSubscriptionServiceFixture
     [Test]
     public async Task Should_be_able_to_ignore_subscribe_async()
     {
-        var subscriptionService = await ExerciseSubscriptionServiceAsync(SubscribeType.Ignore, [typeof(MessageTypeOne).FullName!]);
+        var subscriptionService = await ExerciseSubscriptionServiceAsync(SubscriptionMode.Disabled, [typeof(MessageTypeOne).FullName!]);
 
         List<string> uris = [];
 
@@ -45,10 +45,10 @@ public class SqlServerSubscriptionServiceFixture
     [Test]
     public void Should_be_able_to_ensure_subscribe()
     {
-        Assert.ThrowsAsync<ApplicationException>(async () => await ExerciseSubscriptionServiceAsync(SubscribeType.Ensure, [typeof(MessageTypeOne).FullName!]));
+        Assert.ThrowsAsync<ApplicationException>(async () => await ExerciseSubscriptionServiceAsync(SubscriptionMode.FailWhenMissing, [typeof(MessageTypeOne).FullName!]));
     }
 
-    private async Task<ISubscriptionService> ExerciseSubscriptionServiceAsync(SubscribeType subscribeType, List<string> messageTypes)
+    private async Task<ISubscriptionService> ExerciseSubscriptionServiceAsync(SubscriptionMode subscriptionMode, List<string> messageTypes)
     {
         var configuration = new ConfigurationBuilder()
             .AddUserSecrets<SqlServerSubscriptionServiceFixture>()
@@ -58,7 +58,7 @@ public class SqlServerSubscriptionServiceFixture
             .AddServiceBus(builder =>
             {
                 builder.Options.Inbox.WorkTransportUri = _workTransportUri;
-                builder.Options.Subscription.SubscribeType = subscribeType;
+                builder.Options.Subscription.Mode = subscriptionMode;
                 builder.Options.Subscription.MessageTypes = messageTypes;
             })
             .AddSqlServerSubscription(builder =>

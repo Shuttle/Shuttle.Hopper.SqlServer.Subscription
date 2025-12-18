@@ -22,7 +22,7 @@ public class SubscriptionObserver(IOptions<ServiceBusOptions> serviceBusOptions,
         var messageTypes = _serviceBusOptions.Subscription.MessageTypes;
 
         if (!messageTypes.Any() ||
-            _serviceBusOptions.Subscription.SubscribeType == SubscribeType.Ignore)
+            _serviceBusOptions.Subscription.Mode == SubscriptionMode.Disabled)
         {
             return;
         }
@@ -73,9 +73,9 @@ EXEC sp_releaseapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @L
 
         foreach (var messageType in messageTypes)
         {
-            switch (_serviceBusOptions.Subscription.SubscribeType)
+            switch (_serviceBusOptions.Subscription.Mode)
             {
-                case SubscribeType.Normal:
+                case SubscriptionMode.Standard:
                 {
                     _dbContext.SubscriberMessageTypes.Add(new()
                     {
@@ -85,7 +85,7 @@ EXEC sp_releaseapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @L
 
                     break;
                 }
-                case SubscribeType.Ensure:
+                case SubscriptionMode.FailWhenMissing:
                 {
                     if (await _dbContext.SubscriberMessageTypes.FirstOrDefaultAsync(item => item.MessageType == messageType && item.InboxWorkQueueUri == inboxWorkQueueUri, cancellationToken: cancellationToken) == null)
                     {
