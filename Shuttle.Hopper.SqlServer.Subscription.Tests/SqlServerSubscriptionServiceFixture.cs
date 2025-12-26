@@ -55,7 +55,6 @@ public class SqlServerSubscriptionServiceFixture
             .Build();
 
         var services = new ServiceCollection()
-            .AddSingleton<IConfiguration>(configuration)
             .AddServiceBus(builder =>
             {
                 builder.Options.Inbox.WorkTransportUri = _workTransportUri;
@@ -64,7 +63,7 @@ public class SqlServerSubscriptionServiceFixture
             })
             .AddSqlServerSubscription(builder =>
             {
-                builder.Options.ConnectionStringName = "Hopper";
+                builder.Options.ConnectionString = configuration.GetConnectionString("Hopper") ?? throw new ApplicationException("A 'ConnectionString' with name 'Hopper' is required which points to a Sql Server database where the subscription table will be stored.");
                 builder.Options.Schema = "SubscriptionFixture";
             });
 

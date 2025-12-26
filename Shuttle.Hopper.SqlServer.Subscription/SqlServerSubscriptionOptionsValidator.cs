@@ -9,9 +9,9 @@ public class SqlServerSubscriptionOptionsValidator : IValidateOptions<SqlServerS
     {
         Guard.AgainstNull(options);
 
-        if (string.IsNullOrWhiteSpace(options.ConnectionStringName))
+        if (string.IsNullOrWhiteSpace(options.ConnectionString))
         {
-            return ValidateOptionsResult.Fail(Resources.ConnectionStringNameOptionException);
+            return ValidateOptionsResult.Fail(Resources.ConnectionStringOptionException);
         }
 
         if (string.IsNullOrWhiteSpace(options.Schema))
