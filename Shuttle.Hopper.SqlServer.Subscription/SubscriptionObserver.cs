@@ -29,7 +29,7 @@ public class SubscriptionObserver(IOptions<ServiceBusOptions> serviceBusOptions,
 
         var missingMessageTypes = new List<string>();
 
-        if (_sqlServerSubscriptionOptions.EnsureSchema)
+        if (_sqlServerSubscriptionOptions.ConfigureDatabase)
         {
             await _dbContext.Database.ExecuteSqlRawAsync($@"
 EXEC sp_getapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @LockMode = 'Exclusive', @LockOwner = 'Session', @LockTimeout = 15000;

@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
             {
                 options.ConnectionString = sqlServerSubscriptionBuilder.Options.ConnectionString;
                 options.Schema = sqlServerSubscriptionBuilder.Options.Schema;
-                options.EnsureSchema = sqlServerSubscriptionBuilder.Options.EnsureSchema;
+                options.ConfigureDatabase = sqlServerSubscriptionBuilder.Options.ConfigureDatabase;
             });
 
             services.AddSingleton<ISubscriptionQuery, SubscriptionQuery>();

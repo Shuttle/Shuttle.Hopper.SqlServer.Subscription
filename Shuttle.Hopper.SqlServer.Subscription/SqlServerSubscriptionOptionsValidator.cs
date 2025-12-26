@@ -19,6 +19,11 @@ public class SqlServerSubscriptionOptionsValidator : IValidateOptions<SqlServerS
             return ValidateOptionsResult.Fail(Resources.SchemaOptionException);
         }
 
+        if (!System.Text.RegularExpressions.Regex.IsMatch(options.Schema, "^[a-zA-Z_][a-zA-Z0-9_]*$"))
+        {
+            return ValidateOptionsResult.Fail(Resources.SchemaIdentifierException);
+        }
+
         return ValidateOptionsResult.Success;
     }
 }

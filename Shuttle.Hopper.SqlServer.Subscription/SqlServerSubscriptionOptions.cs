@@ -6,5 +6,5 @@ public class SqlServerSubscriptionOptions
 
     public string ConnectionString { get; set; } = string.Empty;
     public string Schema { get; set; } = "dbo";
-    public bool EnsureSchema { get; set; } = true;
+    public bool ConfigureDatabase { get; set; } = true;
 }

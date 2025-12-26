@@ -79,6 +79,15 @@ namespace Shuttle.Hopper.SqlServer.Subscription {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;Schema&apos; option is not a valid identifier..
+        /// </summary>
+        public static string SchemaIdentifierException {
+            get {
+                return ResourceManager.GetString("SchemaIdentifierException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Option &apos;Schema&apos; is required..
         /// </summary>
         public static string SchemaOptionException {

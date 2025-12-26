@@ -123,6 +123,9 @@
   <data name="MissingSubscriptionException" xml:space="preserve">
     <value>The following missing message type subscriptions have been logged: {0}</value>
   </data>
+  <data name="SchemaIdentifierException" xml:space="preserve">
+    <value>The 'Schema' option is not a valid identifier.</value>
+  </data>
   <data name="SchemaOptionException" xml:space="preserve">
     <value>Option 'Schema' is required.</value>
   </data>
