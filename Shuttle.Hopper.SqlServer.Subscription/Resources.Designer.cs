@@ -61,11 +61,20 @@ namespace Shuttle.Hopper.SqlServer.Subscription {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Options `ConnectionString` is required..
+        ///   Looks up a localized string similar to Could not find a connection string with name &apos;{0}&apos;..
         /// </summary>
-        public static string ConnectionStringOptionException {
+        public static string ConnectionStringException {
             get {
-                return ResourceManager.GetString("ConnectionStringOptionException", resourceCulture);
+                return ResourceManager.GetString("ConnectionStringException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options `ConnectionStringName` is required..
+        /// </summary>
+        public static string ConnectionStringNameOptionException {
+            get {
+                return ResourceManager.GetString("ConnectionStringNameOptionException", resourceCulture);
             }
         }
         

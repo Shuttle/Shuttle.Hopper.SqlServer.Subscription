@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
 
             services.AddOptions<SqlServerSubscriptionOptions>().Configure(options =>
             {
-                options.ConnectionString = sqlServerSubscriptionBuilder.Options.ConnectionString;
+                options.ConnectionStringName = sqlServerSubscriptionBuilder.Options.ConnectionStringName;
                 options.Schema = sqlServerSubscriptionBuilder.Options.Schema;
                 options.ConfigureDatabase = sqlServerSubscriptionBuilder.Options.ConfigureDatabase;
             });
@@ -29,7 +29,21 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<ISubscriptionQuery, SubscriptionQuery>();
             services.AddSingleton<SubscriptionObserver>();
             services.AddSingleton<IHostedService, SubscriptionHostedService>();
-            services.AddSingleton<ISqlServerSubscriptionDbContextFactory, SqlServerSubscriptionDbContextFactory>();
+
+            services.AddDbContextFactory<SqlServerSubscriptionDbContext>((serviceProvider, dbContextFactoryBuilder) =>
+            {
+                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+                var connectionString = configuration.GetConnectionString(sqlServerSubscriptionBuilder.Options.ConnectionStringName);
+
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    throw new ArgumentException(string.Format(Resources.ConnectionStringException, sqlServerSubscriptionBuilder.Options.ConnectionStringName));
+                }
+
+                dbContextFactoryBuilder.UseSqlServer(connectionString);
+            });
+
 
             return services;
         }
