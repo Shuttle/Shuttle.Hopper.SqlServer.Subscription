@@ -66,7 +66,7 @@ BEGIN
 END
 
 EXEC sp_releaseapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @LockOwner = 'Session';
-", cancellationToken: cancellationToken);
+", cancellationToken);
         }
 
         var inboxWorkQueueUri = _serviceBusOptions.Inbox.WorkTransportUri.ToString();
@@ -77,17 +77,20 @@ EXEC sp_releaseapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @L
             {
                 case SubscriptionMode.Standard:
                 {
-                    _dbContext.SubscriberMessageTypes.Add(new()
+                    if (await _dbContext.SubscriberMessageTypes.FirstOrDefaultAsync(item => item.MessageType == messageType && item.InboxWorkQueueUri == inboxWorkQueueUri, cancellationToken) == null)
                     {
-                        MessageType = messageType,
-                        InboxWorkQueueUri = inboxWorkQueueUri
-                    });
+                        _dbContext.SubscriberMessageTypes.Add(new()
+                        {
+                            MessageType = messageType,
+                            InboxWorkQueueUri = inboxWorkQueueUri
+                        });
+                    }
 
                     break;
                 }
                 case SubscriptionMode.FailWhenMissing:
                 {
-                    if (await _dbContext.SubscriberMessageTypes.FirstOrDefaultAsync(item => item.MessageType == messageType && item.InboxWorkQueueUri == inboxWorkQueueUri, cancellationToken: cancellationToken) == null)
+                    if (await _dbContext.SubscriberMessageTypes.FirstOrDefaultAsync(item => item.MessageType == messageType && item.InboxWorkQueueUri == inboxWorkQueueUri, cancellationToken) == null)
                     {
                         missingMessageTypes.Add(messageType);
                     }
