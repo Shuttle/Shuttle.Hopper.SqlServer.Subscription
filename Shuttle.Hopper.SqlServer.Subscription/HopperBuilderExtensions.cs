@@ -8,7 +8,7 @@ public static class HopperBuilderExtensions
 {
     extension(HopperBuilder hopperBuilder)
     {
-        public IServiceCollection UseSqlServerSubscription(Action<SqlServerSubscriptionBuilder>? builder = null)
+        public HopperBuilder UseSqlServerSubscription(Action<SqlServerSubscriptionBuilder>? builder = null)
         {
             var services = hopperBuilder.Services;
             var sqlServerSubscriptionBuilder = new SqlServerSubscriptionBuilder(services);
@@ -32,8 +32,8 @@ public static class HopperBuilderExtensions
             {
                 dbContextFactoryBuilder.UseSqlServer(sqlServerSubscriptionBuilder.Options.ConnectionString);
             });
-            
-            return services;
+
+            return hopperBuilder;
         }
     }
 }
