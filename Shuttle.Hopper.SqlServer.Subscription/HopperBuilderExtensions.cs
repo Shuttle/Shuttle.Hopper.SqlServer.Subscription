@@ -1,18 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Shuttle.Core.Contract;
 
 namespace Shuttle.Hopper.SqlServer.Subscription;
 
-public static class ServiceCollectionExtensions
+public static class HopperBuilderExtensions
 {
-    extension(IServiceCollection services)
+    extension(HopperBuilder hopperBuilder)
     {
-        public IServiceCollection AddSqlServerSubscription(Action<SqlServerSubscriptionBuilder>? builder = null)
+        public IServiceCollection UseSqlServerSubscription(Action<SqlServerSubscriptionBuilder>? builder = null)
         {
-            var sqlServerSubscriptionBuilder = new SqlServerSubscriptionBuilder(Guard.AgainstNull(services));
+            var services = hopperBuilder.Services;
+            var sqlServerSubscriptionBuilder = new SqlServerSubscriptionBuilder(services);
 
             builder?.Invoke(sqlServerSubscriptionBuilder);
 
@@ -27,14 +26,13 @@ public static class ServiceCollectionExtensions
 
             services.AddSingleton<ISubscriptionQuery, SubscriptionQuery>();
             services.AddSingleton<SubscriptionObserver>();
-            services.AddSingleton<IHostedService, SubscriptionHostedService>();
+            services.AddHostedService<SubscriptionHostedService>();
 
             services.AddDbContextFactory<SqlServerSubscriptionDbContext>((_, dbContextFactoryBuilder) =>
             {
                 dbContextFactoryBuilder.UseSqlServer(sqlServerSubscriptionBuilder.Options.ConnectionString);
             });
-
-
+            
             return services;
         }
     }

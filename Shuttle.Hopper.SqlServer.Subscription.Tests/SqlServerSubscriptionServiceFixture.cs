@@ -55,16 +55,17 @@ public class SqlServerSubscriptionServiceFixture
             .Build();
 
         var services = new ServiceCollection()
-            .AddServiceBus(builder =>
+            .AddHopper(hopperBuilder =>
             {
-                builder.Options.Inbox.WorkTransportUri = _workTransportUri;
-                builder.Options.Subscription.Mode = subscriptionMode;
-                builder.Options.Subscription.MessageTypes = messageTypes;
-            })
-            .AddSqlServerSubscription(builder =>
-            {
-                builder.Options.ConnectionString = configuration.GetConnectionString("Hopper") ?? throw new ApplicationException("A 'ConnectionString' with name 'Hopper' is required which points to a Sql Server database where the subscription table will be stored.");
-                builder.Options.Schema = "SubscriptionFixture";
+                hopperBuilder.Options.Inbox.WorkTransportUri = _workTransportUri;
+                hopperBuilder.Options.Subscription.Mode = subscriptionMode;
+                hopperBuilder.Options.Subscription.MessageTypes = messageTypes;
+
+                hopperBuilder.UseSqlServerSubscription(builder =>
+                {
+                    builder.Options.ConnectionString = configuration.GetConnectionString("Hopper") ?? throw new ApplicationException("A 'ConnectionString' with name 'Hopper' is required which points to a Sql Server database where the subscription table will be stored.");
+                    builder.Options.Schema = "SubscriptionFixture";
+                });
             });
 
         var serviceProvider = services.BuildServiceProvider();

@@ -7,23 +7,23 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shuttle.Hopper.SqlServer.Subscription;
 
 [SuppressMessage("Security", "EF1002:Risk of vulnerability to SQL injection", Justification = "Schema and table names are from trusted configuration sources")]
-public class SubscriptionObserver(IOptions<ServiceBusOptions> serviceBusOptions, IOptions<SqlServerSubscriptionOptions> sqlSubscriptionOptions, IDbContextFactory<SqlServerSubscriptionDbContext> dbContextFactory)
+public class SubscriptionObserver(IOptions<HopperOptions> hopperOptions, IOptions<SqlServerSubscriptionOptions> sqlSubscriptionOptions, IDbContextFactory<SqlServerSubscriptionDbContext> dbContextFactory)
     : IPipelineObserver<Started>
 {
     private readonly IDbContextFactory<SqlServerSubscriptionDbContext> _dbContextFactory = Guard.AgainstNull(dbContextFactory);
-    private readonly ServiceBusOptions _serviceBusOptions = Guard.AgainstNull(Guard.AgainstNull(serviceBusOptions).Value);
+    private readonly HopperOptions _hopperOptions = Guard.AgainstNull(Guard.AgainstNull(hopperOptions).Value);
     private readonly SqlServerSubscriptionOptions _sqlServerSubscriptionOptions = Guard.AgainstNull(Guard.AgainstNull(sqlSubscriptionOptions).Value);
 
     public async Task ExecuteAsync(IPipelineContext<Started> pipelineContext, CancellationToken cancellationToken = default)
     {
-        if (_serviceBusOptions.Inbox.WorkTransportUri == null)
+        if (_hopperOptions.Inbox.WorkTransportUri == null)
         {
             throw new InvalidOperationException(Hopper.Resources.SubscribeWithNoInboxException);
         }
 
-        var messageTypes = _serviceBusOptions.Subscription.MessageTypes;
+        var messageTypes = _hopperOptions.Subscription.MessageTypes;
 
-        if (!messageTypes.Any() || _serviceBusOptions.Subscription.Mode == SubscriptionMode.Disabled)
+        if (!messageTypes.Any() || _hopperOptions.Subscription.Mode == SubscriptionMode.Disabled)
         {
             return;
         }
@@ -33,7 +33,7 @@ public class SubscriptionObserver(IOptions<ServiceBusOptions> serviceBusOptions,
             return;
         }
 
-        var inboxWorkQueueUri = _serviceBusOptions.Inbox.WorkTransportUri.ToString();
+        var inboxWorkQueueUri = _hopperOptions.Inbox.WorkTransportUri.ToString();
         var missingMessageTypes = new List<string>();
 
         await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -83,7 +83,7 @@ WHERE
                 continue;
             }
 
-            switch (_serviceBusOptions.Subscription.Mode)
+            switch (_hopperOptions.Subscription.Mode)
             {
                 case SubscriptionMode.Standard:
                 {
