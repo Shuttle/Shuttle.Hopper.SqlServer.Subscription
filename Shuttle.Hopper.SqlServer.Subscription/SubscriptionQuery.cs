@@ -1,4 +1,5 @@
 using System.Data;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Shuttle.Core.Contract;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,7 @@ public class SubscriptionQuery(IDbContextFactory<SqlServerSubscriptionDbContext>
     {
         Guard.AgainstEmpty(messageType);
 
+        using var scope = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
         await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
         var connection = dbContext.Database.GetDbConnection();
 
@@ -41,7 +43,7 @@ WHERE
         var result = new List<string>();
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-            
+
         while (await reader.ReadAsync(cancellationToken))
         {
             result.Add(reader.GetString(0));
