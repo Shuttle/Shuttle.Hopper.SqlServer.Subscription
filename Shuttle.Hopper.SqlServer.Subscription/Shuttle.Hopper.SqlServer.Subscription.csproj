@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
-    <PackageReference Include="Shuttle.Hopper" Version="21.0.0-alpha" />
+    <PackageReference Include="Shuttle.Hopper" Version="21.0.1-beta" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +28,7 @@
 
   <PropertyGroup>
     <Description>Sql Server storage of subscriptions for use with Shuttle.Hopper.</Description>
-    <Version>21.0.0-alpha</Version>
+    <Version>21.0.1-beta</Version>
     <PackageProjectUrl>https://github.com/Shuttle/Shuttle.Hopper.SqlServer.Subscription</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Shuttle/Shuttle.Hopper.SqlServer.Subscription.git</RepositoryUrl>
     <PackageTags>sqlserver subscription pubsub</PackageTags>

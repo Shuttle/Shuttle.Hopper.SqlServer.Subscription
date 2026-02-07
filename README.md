@@ -1,21 +1,28 @@
 # Shuttle.Hopper.SqlServer.Subscription
 
-Sql Server implementation of the `ISubscriptionQuery` interface for use with Shuttle.Hopper.
+Sql Server storage of subscriptions for use with Shuttle.Hopper.
+
+> [!NOTE]
+> The implementation will automatically create the required database tables if they are missing. The identity used to connect to the database must have sufficient permissions to create schemas and tables.
+
+
+## Installation
+
+```bash
+dotnet add package Shuttle.Hopper.SqlServer.Subscription
+```
 
 ## Configuration
 
-```c#
-services.AddDataAccess(builder =>
-{
-	builder.AddConnectionString("shuttle", "Microsoft.Data.SqlClient", "server=.;database=shuttle;user id=sa;password=Pass!000");
-});
+In order to use Sql Server for subscriptions, you can use the `UseSqlServerSubscription` extension method:
 
-services.AddSqlQueue(builder =>
+```c#
+services.AddHopper(builder =>
 {
-	builder.AddOptions("shuttle", new SqlQueueOptions
-	{
-		ConnectionStringName = "shuttle"
-	});
+    builder.UseSqlServerSubscription(options =>
+    {
+        options.ConnectionString = "server=.;database=shuttle;user id=sa;password=Pass!000";
+    });
 });
 ```
 
@@ -24,8 +31,12 @@ The default JSON settings structure is as follows:
 ```json
 {
   "Shuttle": {
-    "SqlQueue": {
-      "ConnectionStringName": "connection-string-name"
+    "SqlServer": {
+      "Subscription": {
+        "ConnectionString": "connection-string",
+        "Schema": "dbo",
+        "ConfigureDatabase": true
+      }
     }
   }
 }
@@ -33,6 +44,9 @@ The default JSON settings structure is as follows:
 
 ## Options
 
-| Option | Default	| Description |
+| Option | Default | Description |
 | --- | --- | --- | 
-| `ConnectionStringName` | | The name of the connection string to use.  This package makes use of [Shuttle.Core.Data](https://shuttle.github.io/shuttle-core/data/shuttle-core-data.html) for data access. |
+| `ConnectionString` | | The connection string to use for the Sql Server database. |
+| `Schema` | `dbo` | The schema to use for the subscription tables. |
+| `ConfigureDatabase` | `true` | A boolean value indicating whether the database should be configured (e.g., creating tables) if it doesn't exist. |
+
