@@ -2,8 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Moq;
 using NUnit.Framework;
 using Shuttle.Core.Pipelines;
+using Shuttle.Core.TransactionScope;
 
 namespace Shuttle.Hopper.SqlServer.Subscription.Tests;
 
@@ -76,7 +79,7 @@ public class SqlServerSubscriptionServiceFixture
         {
             await using var dbContext = await serviceProvider.GetRequiredService<IDbContextFactory<SqlServerSubscriptionDbContext>>().CreateDbContextAsync();
 
-            await dbContext.Database.ExecuteSqlRawAsync("DELETE FROM SubscriptionFixture.SubscriberMessageType");
+            await dbContext.Database.ExecuteSqlRawAsync("DELETE FROM subscription_fixture.SubscriberMessageType");
         }
         catch (Exception ex)
         {
@@ -85,7 +88,10 @@ public class SqlServerSubscriptionServiceFixture
 
         var subscriptionService = serviceProvider.GetRequiredService<ISubscriptionService>();
 
-        await serviceProvider.GetRequiredService<SubscriptionObserver>().ExecuteAsync(new PipelineContext<Started>(new Pipeline(serviceProvider.GetRequiredService<IPipelineDependencies>())));
+        var pipelineOptions = Options.Create(new PipelineOptions());
+        var transactionScopeOptions = Options.Create(new TransactionScopeOptions());
+
+        await serviceProvider.GetRequiredService<SubscriptionObserver>().ExecuteAsync(new PipelineContext<Started>(new Pipeline(pipelineOptions, transactionScopeOptions, new TransactionScopeFactory(transactionScopeOptions), new Mock<IServiceProvider>().Object)));
 
         await serviceProvider.GetServices<IHostedService>().OfType<SubscriptionHostedService>().First().StopAsync(CancellationToken.None);
 

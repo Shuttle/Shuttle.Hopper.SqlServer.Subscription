@@ -13,10 +13,10 @@ public class SubscriptionHostedService : IHostedService
     {
         _pipelineOptions = Guard.AgainstNull(Guard.AgainstNull(pipelineOptions).Value);
 
-        _pipelineOptions.PipelineCreated += PipelineCreated;
+        _pipelineOptions.PipelineStarting += PipelineStarting;
     }
 
-    private Task PipelineCreated(PipelineEventArgs eventArgs, CancellationToken cancellationToken)
+    private Task PipelineStarting(PipelineEventArgs eventArgs, CancellationToken cancellationToken)
     {
         if (eventArgs.Pipeline.GetType() == typeof(StartupPipeline))
         {
@@ -33,7 +33,7 @@ public class SubscriptionHostedService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _pipelineOptions.PipelineCreated -= PipelineCreated;
+        _pipelineOptions.PipelineStarting -= PipelineStarting;
 
         return Task.CompletedTask;
     }
