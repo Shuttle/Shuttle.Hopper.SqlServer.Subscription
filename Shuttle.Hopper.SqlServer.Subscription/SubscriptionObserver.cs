@@ -21,24 +21,11 @@ public class SubscriptionObserver(IOptions<HopperOptions> hopperOptions, IOption
             throw new InvalidOperationException(Hopper.Resources.SubscribeWithNoInboxException);
         }
 
-        var messageTypes = _hopperOptions.Subscription.MessageTypes;
-
-        if (!messageTypes.Any() || _hopperOptions.Subscription.Mode == SubscriptionMode.Disabled)
-        {
-            return;
-        }
-
-        if (!_sqlServerSubscriptionOptions.ConfigureDatabase)
-        {
-            return;
-        }
-
-        var inboxWorkQueueUri = _hopperOptions.Inbox.WorkTransportUri.ToString();
-        var missingMessageTypes = new List<string>();
-
         await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
-        
-        await dbContext.Database.ExecuteSqlRawAsync($@"
+
+        if (_sqlServerSubscriptionOptions.ConfigureDatabase)
+        {
+            await dbContext.Database.ExecuteSqlRawAsync($@"
 DECLARE @lock_result INT;
 EXEC @lock_result = sp_getapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @LockMode = 'Exclusive', @LockOwner = 'Session', @LockTimeout = 15000;
 
@@ -65,6 +52,11 @@ END CATCH
 
 EXEC sp_releaseapplock @Resource = '{typeof(SubscriptionObserver).FullName}', @LockOwner = 'Session';
 ", cancellationToken);
+        }
+
+        var inboxWorkQueueUri = _hopperOptions.Inbox.WorkTransportUri.ToString();
+        var messageTypes = _hopperOptions.Subscription.MessageTypes;
+        var missingMessageTypes = new List<string>();
 
         foreach (var messageType in messageTypes)
         {
