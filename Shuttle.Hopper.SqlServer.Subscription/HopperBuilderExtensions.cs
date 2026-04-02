@@ -8,29 +8,27 @@ public static class HopperBuilderExtensions
 {
     extension(HopperBuilder hopperBuilder)
     {
-        public HopperBuilder UseSqlServerSubscription(Action<SqlServerSubscriptionBuilder>? builder = null)
+        public HopperBuilder UseSqlServerSubscription(Action<SqlServerSubscriptionOptions>? configureOptions)
         {
             var services = hopperBuilder.Services;
-            var sqlServerSubscriptionBuilder = new SqlServerSubscriptionBuilder(services);
 
-            builder?.Invoke(sqlServerSubscriptionBuilder);
-
-            services.AddSingleton<IValidateOptions<SqlServerSubscriptionOptions>, SqlServerSubscriptionOptionsValidator>();
-
+            services.AddOptions();
             services.AddOptions<SqlServerSubscriptionOptions>().Configure(options =>
             {
-                options.ConnectionString = sqlServerSubscriptionBuilder.Options.ConnectionString;
-                options.Schema = sqlServerSubscriptionBuilder.Options.Schema;
-                options.ConfigureDatabase = sqlServerSubscriptionBuilder.Options.ConfigureDatabase;
+                configureOptions?.Invoke(options);
             });
+
+            services.AddSingleton<IValidateOptions<SqlServerSubscriptionOptions>, SqlServerSubscriptionOptionsValidator>();
 
             services.AddSingleton<ISubscriptionQuery, SubscriptionQuery>();
             services.AddSingleton<SubscriptionObserver>();
             services.AddHostedService<SubscriptionHostedService>();
 
-            services.AddDbContextFactory<SqlServerSubscriptionDbContext>((_, dbContextFactoryBuilder) =>
+            services.AddDbContextFactory<SqlServerSubscriptionDbContext>((serviceProvider, dbContextFactoryBuilder) =>
             {
-                dbContextFactoryBuilder.UseSqlServer(sqlServerSubscriptionBuilder.Options.ConnectionString);
+                var options = serviceProvider.GetRequiredService<IOptions<SqlServerSubscriptionOptions>>();
+
+                dbContextFactoryBuilder.UseSqlServer(options.Value.ConnectionString);
             });
 
             return hopperBuilder;
