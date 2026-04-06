@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Shuttle.Core.Pipelines;
-using Shuttle.Core.TransactionScope;
 
 namespace Shuttle.Hopper.SqlServer.Subscription.Tests;
 
@@ -89,9 +88,8 @@ public class SqlServerSubscriptionServiceFixture
         var subscriptionService = serviceProvider.GetRequiredService<ISubscriptionService>();
 
         var pipelineOptions = Options.Create(new PipelineOptions());
-        var transactionScopeOptions = Options.Create(new TransactionScopeOptions());
 
-        await serviceProvider.GetRequiredService<SubscriptionObserver>().ExecuteAsync(new PipelineContext<Started>(new Pipeline(pipelineOptions, transactionScopeOptions, new TransactionScopeFactory(transactionScopeOptions), new Mock<IServiceProvider>().Object)));
+        await serviceProvider.GetRequiredService<SubscriptionObserver>().ExecuteAsync(new PipelineContext<Started>(new Pipeline(pipelineOptions, new Mock<IServiceProvider>().Object)));
 
         await serviceProvider.GetServices<IHostedService>().OfType<SubscriptionHostedService>().First().StopAsync(CancellationToken.None);
 
