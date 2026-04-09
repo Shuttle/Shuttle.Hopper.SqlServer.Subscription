@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Shuttle.Core.Contract;
-using Shuttle.Core.Pipelines;
+using Shuttle.Contract;
+using Shuttle.Pipelines;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shuttle.Hopper.SqlServer.Subscription;

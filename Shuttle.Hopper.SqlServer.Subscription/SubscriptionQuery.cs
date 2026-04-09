@@ -1,7 +1,7 @@
 using System.Data;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 using Microsoft.Extensions.Options;
 
 namespace Shuttle.Hopper.SqlServer.Subscription;
