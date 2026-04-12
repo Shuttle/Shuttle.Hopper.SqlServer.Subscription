@@ -12,7 +12,6 @@ public static class HopperBuilderExtensions
         {
             var services = hopperBuilder.Services;
 
-            services.AddOptions();
             services.AddOptions<SqlServerSubscriptionOptions>().Configure(options =>
             {
                 configureOptions?.Invoke(options);
