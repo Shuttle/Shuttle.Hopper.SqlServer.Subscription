@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
-    <PackageReference Include="Shuttle.Hopper" Version="21.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.11" />
+    <PackageReference Include="Shuttle.Hopper" Version="22.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +28,7 @@
 
   <PropertyGroup>
     <Description>Sql Server storage of subscriptions for use with Shuttle.Hopper.</Description>
-    <Version>21.0.2</Version>
+    <Version>22.0.1</Version>
     <PackageProjectUrl>https://github.com/Shuttle/Shuttle.Hopper.SqlServer.Subscription</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Shuttle/Shuttle.Hopper.SqlServer.Subscription.git</RepositoryUrl>
     <PackageTags>sqlserver subscription pubsub</PackageTags>
