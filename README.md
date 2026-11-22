@@ -49,11 +49,13 @@ The default JSON settings structure is as follows:
 ```json
 {
   "Shuttle": {
-    "SqlServer": {
-      "Subscription": {
-        "ConnectionString": "connection-string",
-        "Schema": "dbo",
-        "ConfigureDatabase": true
+    "Hopper": {
+      "SqlServer": {
+        "Subscription": {
+          "ConnectionString": "connection-string",
+          "Schema": "dbo",
+          "ConfigureDatabase": true
+        }
       }
     }
   }

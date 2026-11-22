@@ -2,7 +2,7 @@
 
 public class SqlServerSubscriptionOptions
 {
-    public const string SectionName = "Shuttle:SqlServer:Subscription";
+    public const string SectionName = "Shuttle:Hopper:SqlServer:Subscription";
 
     public string ConnectionString { get; set; } = string.Empty;
     public string Schema { get; set; } = "dbo";
